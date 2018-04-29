@@ -31,23 +31,48 @@ def store_raw_images():
         except Exception as e:
             print(str(e))
 
-#Returns list of files names in the left and right folder;
-#however, only one is required.
-listOfFilesLeft = os.listdir(os.path.join(os.path.dirname(__file__) + "./images/left"))
-listOfFilesLeft.sort()
-listOfFilesRight = os.listdir(os.path.join(os.path.dirname(__file__) + "./images/right"))
-listOfFilesRight.sort()
+#Prepares a folder with tree images, and makes the tager images recognizable.
+def set_target_path():
+    listOfFilesLeft = os.listdir(os.path.join(os.path.dirname(__file__) + "./images/left"))
+    listOfFilesLeft.sort()
+    listOfFilesRight = os.listdir(os.path.join(os.path.dirname(__file__) + "./images/right"))
+    listOfFilesRight.sort()
+    return listOfFilesLeft
 
-store_raw_images()
+#https://medium.com/machine-learning-world/feature-extraction-and-similar-image-search-with-opencv-for-newbies-3c59796bf774
+#Extracts features of an image via using KAZE.
+def extract_features(image_path, vector_size=32):
+    image = cv.imread(image_path, 0)
+    alg = cv.KAZE_create()
+    kps = alg.detect(image)
+    kps = sorted(kps, key=lambda x: -x.response)[:vector_size]
+    kps, dsc = alg.compute(image, kps)
+    dsc = dsc.flatten()
+    needed_size = (vector_size * 64)
+    if dsc.size < needed_size:
+            # if we have less the 32 descriptors then just adding zeros at the
+            # end of our feature vector
+            dsc = np.concatenate([dsc, np.zeros(needed_size - dsc.size)])
+    return dsc
 
-#for index in listOfFilesLeft:
-#    someImage = cv.imread(os.path.join(os.path.dirname(__file__) + "./images/left/" + listOfFilesLeft[0]), 0)
+def convert_to_two_d(flattenedList):
+    x = 0
+    y = 0
+    for index in range(0, flattenedList.size):
+        if index < (flattenedList.size/2):
+            x = x + flattenedList[index]
+        else:
+            y = y + flattenedList[index]
+    print("X value now: " + str(x))
+    print("Y value now: " + str(y))
 
-'''
-Verifies that images does show.
+sampleNames = set_target_path()
+extracted = extract_features(os.path.join(os.path.dirname(__file__) + "./images/left/" + sampleNames[0]))
+convert_to_two_d(extracted)
 
-someImage = cv.imread(os.path.join(os.path.dirname(__file__) + "./images/left/" + listOfFilesLeft[0]), 0)
-cv.imshow("Die! Kaiser!", someImage)
-cv.waitKey(0);
-cv.destroyAllWindows()
-'''
+#Verifies that images does show.
+#
+#someImage = cv.imread(os.path.join(os.path.dirname(__file__) + "./images/left/" + listOfFilesLeft[0]), 0)
+#cv.imshow("Die! Kaiser!", someImage)
+#cv.waitKey(0);
+#cv.destroyAllWindows()
