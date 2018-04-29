@@ -12,3 +12,6 @@ I should go set up the environment.
 
 # Somewhere around 4:30PM
 So, got bucket of images now, where I have to feed that to a Object Detecting software entity.
+
+# Somewhere around 1?
+Been running in a hamster wheel now, decided scrap the entire idea of using deep learning, and use feature extraction.
