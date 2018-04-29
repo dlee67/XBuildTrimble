@@ -32,6 +32,7 @@ def extract_features(image_path, vector_size=32):
     needed_size = (vector_size * 64)
     return kps
 
+#https://pythonprogramming.net/feature-matching-homography-python-opencv-tutorial/
 def prep_left_and_right_samples():
     leftImgDir = "./images/left/" + str(return_left_samples()[0])
     rightImgDir = "./images/right/" + str(return_right_samples()[0])
